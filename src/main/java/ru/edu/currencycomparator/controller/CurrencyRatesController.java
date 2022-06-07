@@ -17,7 +17,7 @@ import ru.edu.currencycomparator.service.GiphyServiceImp;
 public class CurrencyRatesController {
 
     @Value("${openexchangerates.org.base_currency}")
-    private String buseCurrency;
+    private String baseCurrency;
 
     @Value("${giphy.com.rich_tag}")
     private String richTag;
@@ -50,18 +50,24 @@ public class CurrencyRatesController {
     public String index (Model model){
         String gifUrl = giphyServiceImp.getGif(errorTag);
 
-        Double prevRate = currencyRatesServiceImp.getPreviousRate(buseCurrency);
-        Double presentRate = currencyRatesServiceImp.getPresentRate(buseCurrency);
+        Double prevRate ;
+        Double presentRate;
+        try{
+            prevRate = currencyRatesServiceImp.getPreviousRate(baseCurrency);
+            presentRate = currencyRatesServiceImp.getPresentRate(baseCurrency);
 
-        if (prevRate > presentRate){
-            gifUrl = giphyServiceImp.getGif(brokenTag);
-        } else if ( prevRate < presentRate) {
-            gifUrl = giphyServiceImp.getGif(richTag);
-        }else if( prevRate.equals(presentRate)){
-            gifUrl = giphyServiceImp.getGif(equalTag);
+            if (prevRate > presentRate){
+                gifUrl = giphyServiceImp.getGif(brokenTag);
+            } else if ( prevRate < presentRate) {
+                gifUrl = giphyServiceImp.getGif(richTag);
+            }else if( prevRate.equals(presentRate)){
+                gifUrl = giphyServiceImp.getGif(equalTag);
+            }
+         }catch (IllegalArgumentException ex){
+            ex.printStackTrace();
+            model.addAttribute("gifUrl", gifUrl);
+            return "error";
         }
-
-        model.addAttribute("rate", prevRate);
         model.addAttribute("gifUrl", gifUrl);
         return "welcome";
     }
