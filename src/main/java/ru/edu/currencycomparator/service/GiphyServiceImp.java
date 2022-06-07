@@ -18,6 +18,7 @@ public class GiphyServiceImp implements GiphyService{
 
     @Autowired
     private GiphyFeignClient giphyFeignClient;
+
     @Value("${giphy.com.api_key}")
     private String apiKey;
 

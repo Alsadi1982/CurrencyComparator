@@ -34,6 +34,9 @@ public class CurrencyRatesServiceImp implements CurrencyRatesService{
     public Double getPreviousRate(String baseCurrency) {
         String yesterdayDate = this.getYesterdayDate();
         CurrencyRates previousRate = currencyFeignClient.getYesterdayRate(yesterdayDate, appID);
+        if (!previousRate.getRates().containsKey(baseCurrency)){
+            throw new IllegalArgumentException("Currency " + baseCurrency + " doesn't exist!");
+        }
         return previousRate.getRates().get(baseCurrency);
     }
 
@@ -46,7 +49,9 @@ public class CurrencyRatesServiceImp implements CurrencyRatesService{
     @Override
     public Double getPresentRate(String baseCurrency) {
         CurrencyRates presentRate = currencyFeignClient.getTodayRate(appID);
-
+        if (!presentRate.getRates().containsKey(baseCurrency)) {
+            throw new IllegalArgumentException("Currency " + baseCurrency + " doesn't exist!");
+        }
         return presentRate.getRates().get(baseCurrency);
     }
 
